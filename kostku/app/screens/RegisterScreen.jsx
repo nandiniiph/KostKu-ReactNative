@@ -19,11 +19,11 @@ const RegisterScreen = ({ navigation, route }) => {
     try {
       await createUserWithEmailAndPassword(auth, email, password);
       alert('Registrasi berhasil!');
-      navigation.navigate('Login');
+      navigation.navigate('Login', { userType }); // pastikan userType dioper saat navigasi
     } catch (error) {
       alert('Registrasi gagal: ' + error.message);
     }
-  };
+  };  
 
   return (
     <View style={styles.container}>

@@ -5,7 +5,7 @@ import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../firebase/firebaseConfig';
 
 const LoginScreen = ({ navigation, route }) => {
-  const { userType } = route.params || {};
+  const { userType = 'PENCARI LAYANAN' } = route.params || {}; // default jika userType undefined
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
@@ -23,7 +23,7 @@ const LoginScreen = ({ navigation, route }) => {
     <View style={styles.container}>
       <Image source={require('../assets/logo.png')} style={styles.logo} />
       <Text style={styles.title}>Login</Text>
-      <Text style={styles.subtitle}>Silahkan masuk sebagai {userType.toLowerCase()}.</Text>
+      <Text style={styles.subtitle}>Silahkan masuk sebagai {userType ? userType.toLowerCase() : ''}.</Text>
       <TextInput
         style={styles.input}
         placeholder="email"
