@@ -1,71 +1,65 @@
 // app/screens/LoginOptionsScreen.jsx
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Image, SafeAreaView } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
 
-const LoginOptionsScreen = () => {
-  const navigation = useNavigation(); // Use the useNavigation hook to get navigation
+const LoginOptionsScreen = ({ navigation }) => {
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
       <Image source={require('../assets/logo.png')} style={styles.logo} />
       <Text style={styles.welcomeText}>Selamat Datang!</Text>
       <Text style={styles.subText}>Masuk Sebagai</Text>
 
-      {/* Tombol untuk Pencari Layanan */}
       <TouchableOpacity
         style={styles.button}
-        onPress={() => {
-          console.log("Tombol Pencari Layanan ditekan");
-          navigation.navigate('LoginScreen', { userType: 'Pencari' });
-        }}
+        onPress={() => navigation.navigate('Login', { userType: 'PENCARI LAYANAN' })}
       >
         <Text style={styles.buttonText}>PENCARI LAYANAN</Text>
       </TouchableOpacity>
 
-      {/* Tombol untuk Penyedia Layanan */}
       <TouchableOpacity
         style={styles.button}
-        onPress={() => navigation.navigate('Login', { userType: 'Penyedia' })}
+        onPress={() => navigation.navigate('Login', { userType: 'PENYEDIA LAYANAN' })}
       >
         <Text style={styles.buttonText}>PENYEDIA LAYANAN</Text>
       </TouchableOpacity>
-    </SafeAreaView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
     alignItems: 'center',
-    padding: 16,
+    justifyContent: 'center',
+    backgroundColor: '#fff',
   },
   logo: {
-    width: 100,
+    width: 150,
     height: 100,
     marginBottom: 20,
   },
   welcomeText: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 20,
+    fontSize: 18,
+    fontWeight: '600',
+    marginBottom: 5,
   },
   subText: {
-    fontSize: 16,
+    fontSize: 14,
     marginBottom: 20,
   },
   button: {
-    backgroundColor: '#00BFFF',
-    padding: 15,
-    borderRadius: 8,
     width: '80%',
+    padding: 15,
+    borderRadius: 5,
+    backgroundColor: '#fff',
+    borderColor: '#000',
+    borderWidth: 1,
+    marginVertical: 10,
     alignItems: 'center',
-    marginBottom: 10,
   },
   buttonText: {
-    color: 'white',
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: '500',
   },
 });
 

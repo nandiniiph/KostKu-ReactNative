@@ -1,4 +1,4 @@
-// app/components/LogoComponent.jsx
+// src/components/LogoComponent.jsx
 import React from 'react';
 import { View, Image, StyleSheet } from 'react-native';
 

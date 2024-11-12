@@ -1,16 +1,16 @@
-//app/firebase/firebaseConfig.jsx
+//src/firebase/firebaseConfig.jsx
 import { initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
 
 // Firebase config object (replace with your Firebase config)
 const firebaseConfig = {
-  apiKey: "AIzaSyBEZhjoka0uXrPYUihCzmwY5Kq8CaeLQCg",
-  authDomain: "mybookapp-80384.firebaseapp.com",
-  projectId: "mybookapp-80384",
-  storageBucket: "mybookapp-80384.firebasestorage.app",
-  messagingSenderId: "494469583548",
-  appId: "1:494469583548:web:ea1cb5f31663a22362f6b9",
-  measurementId: "G-EREH2DXVTZ"
+  apiKey: "AIzaSyC_BdinEmPOgQUfSb9LSVuW3lUXGBGWXY4",
+  authDomain: "kostku-1a877.firebaseapp.com",
+  projectId: "kostku-1a877",
+  storageBucket: "kostku-1a877.firebasestorage.app",
+  messagingSenderId: "307937264209",
+  appId: "1:307937264209:web:01aefe260f6cc061c5ae70",
+  measurementId: "G-4QC0VNPSE3"
 };
 
 // Initialize Firebase

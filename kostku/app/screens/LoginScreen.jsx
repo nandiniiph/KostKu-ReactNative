@@ -1,23 +1,50 @@
 // app/screens/LoginScreen.jsx
-import React from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
-import { useRoute } from '@react-navigation/native';
+import React, { useState } from 'react';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image } from 'react-native';
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '../firebase/firebaseConfig';
 
-const LoginScreen = ( {navigation} ) => {
-  const route = useRoute();  // Menggunakan useRoute untuk mendapatkan parameter dari screen sebelumnya
-  const { userType } = route.params || {};  // Mengambil nilai userType (Pencari atau Penyedia)
+const LoginScreen = ({ navigation, route }) => {
+  const { userType } = route.params || {};
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  const handleLogin = async () => {
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+      alert('Login berhasil!');
+      // Navigasi ke halaman utama setelah login
+    } catch (error) {
+      alert('Login gagal: ' + error.message);
+    }
+  };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.headerText}>Login Sebagai {userType}</Text>
+      <Image source={require('../assets/logo.png')} style={styles.logo} />
+      <Text style={styles.title}>Login</Text>
+      <Text style={styles.subtitle}>Silahkan masuk sebagai {userType.toLowerCase()}.</Text>
+      <TextInput
+        style={styles.input}
+        placeholder="email"
+        value={email}
+        onChangeText={setEmail}
+        keyboardType="email-address"
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Password"
+        value={password}
+        onChangeText={setPassword}
+        secureTextEntry
+      />
+      
+      <TouchableOpacity style={styles.button} onPress={handleLogin}>
+        <Text style={styles.buttonText}>Masuk</Text>
+      </TouchableOpacity>
 
-      {/* Input untuk email */}
-      <TextInput style={styles.input} placeholder="Email" keyboardType="email-address" />
-      {/* Input untuk password */}
-      <TextInput style={styles.input} placeholder="Password" secureTextEntry={true} />
-
-      <TouchableOpacity style={styles.button}>
-        <Text style={styles.buttonText}>Login</Text>
+      <TouchableOpacity onPress={() => navigation.navigate('Register', { userType })}>
+        <Text style={styles.registerText}>Belum punya akun? Daftar</Text>
       </TouchableOpacity>
     </View>
   );
@@ -26,35 +53,48 @@ const LoginScreen = ( {navigation} ) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
     alignItems: 'center',
-    padding: 16,
+    justifyContent: 'center',
+    backgroundColor: '#fff',
   },
-  headerText: {
+  logo: {
+    width: 150,
+    height: 100,
+    marginBottom: 20,
+  },
+  title: {
     fontSize: 24,
     fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  subtitle: {
+    fontSize: 16,
+    color: '#666',
     marginBottom: 20,
   },
   input: {
-    height: 40,
-    borderColor: 'gray',
-    borderWidth: 1,
-    borderRadius: 8,
     width: '80%',
-    marginBottom: 20,
-    paddingLeft: 10,
+    padding: 12,
+    marginBottom: 15,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 5,
   },
   button: {
-    backgroundColor: '#00BFFF',
-    padding: 15,
-    borderRadius: 8,
     width: '80%',
+    padding: 15,
+    backgroundColor: '#00bcd4',
+    borderRadius: 5,
     alignItems: 'center',
   },
   buttonText: {
-    color: 'white',
+    color: '#fff',
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  registerText: {
+    marginTop: 10,
+    color: '#666',
   },
 });
 
