@@ -1,8 +1,10 @@
-//src/firebase/firebaseConfig.jsx
 import { initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
+import { getFirestore } from 'firebase/firestore';
+import { getStorage } from 'firebase/storage';
 
-// Firebase config object (replace with your Firebase config)
+
+// Firebase config object (gantilah dengan informasi yang sesuai)
 const firebaseConfig = {
   apiKey: "AIzaSyC_BdinEmPOgQUfSb9LSVuW3lUXGBGWXY4",
   authDomain: "kostku-1a877.firebaseapp.com",
@@ -16,5 +18,7 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
+const db = getFirestore(app);
+const storage = getStorage(app);
 
-export { auth };
+export { auth, db };

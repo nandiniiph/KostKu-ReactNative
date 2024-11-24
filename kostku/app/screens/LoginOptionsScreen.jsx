@@ -1,4 +1,3 @@
-// app/screens/LoginOptionsScreen.jsx
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
 
@@ -7,20 +6,24 @@ const LoginOptionsScreen = ({ navigation }) => {
     <View style={styles.container}>
       <Image source={require('../assets/logo.png')} style={styles.logo} />
       <Text style={styles.welcomeText}>Selamat Datang!</Text>
-      <Text style={styles.subText}>Masuk Sebagai</Text>
-
+      <Text style={styles.subText}>Login Sebagai</Text>
       <TouchableOpacity
         style={styles.button}
-        onPress={() => navigation.navigate('Login', { userType: 'PENCARI LAYANAN' })}
+        onPress={() => navigation.navigate('Login', { role: 'pencari' })}
       >
-        <Text style={styles.buttonText}>PENCARI LAYANAN</Text>
+        <Text style={styles.buttonText}>Pencari Kost</Text>
       </TouchableOpacity>
-
       <TouchableOpacity
         style={styles.button}
-        onPress={() => navigation.navigate('Login', { userType: 'PENYEDIA LAYANAN' })}
+        onPress={() => navigation.navigate('Login', { role: 'penyedia' })}
       >
-        <Text style={styles.buttonText}>PENYEDIA LAYANAN</Text>
+        <Text style={styles.buttonText}>Penyedia Kost</Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+        style={styles.link}
+        onPress={() => navigation.navigate('Register')}
+      >
+        <Text style={styles.linkText}>Belum punya akun? Daftar di sini</Text>
       </TouchableOpacity>
     </View>
   );
@@ -29,12 +32,12 @@ const LoginOptionsScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
     justifyContent: 'center',
+    alignItems: 'center',
     backgroundColor: '#fff',
   },
   logo: {
-    width: 150,
+    width: 300,
     height: 100,
     marginBottom: 20,
   },
@@ -47,19 +50,29 @@ const styles = StyleSheet.create({
     fontSize: 14,
     marginBottom: 20,
   },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 20,
+  },
   button: {
-    width: '80%',
+    backgroundColor: '#007bff',
     padding: 15,
     borderRadius: 5,
-    backgroundColor: '#fff',
-    borderColor: '#000',
-    borderWidth: 1,
     marginVertical: 10,
+    width: '80%',
     alignItems: 'center',
   },
   buttonText: {
+    color: '#fff',
     fontSize: 16,
-    fontWeight: '500',
+  },
+  link: {
+    marginTop: 20,
+  },
+  linkText: {
+    color: '#007bff',
+    fontSize: 14,
   },
 });
 

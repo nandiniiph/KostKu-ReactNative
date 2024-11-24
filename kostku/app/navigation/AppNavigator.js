@@ -1,42 +1,22 @@
-// app/navigation/AppNavigator.js
 import React from 'react';
-import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { createStackNavigator } from '@react-navigation/stack';
 import LoginOptionsScreen from '../screens/LoginOptionsScreen';
 import LoginScreen from '../screens/LoginScreen';
 import RegisterScreen from '../screens/RegisterScreen';
-import HomeScreen from '../screens/HomeScreen';
+import PencariKostScreen from '../screens/PencariKostScreen';
+import PenyediaKostScreen from '../screens/PenyediaKostScreen';
 
-const Stack = createNativeStackNavigator();
+const Stack = createStackNavigator();
 
 const AppNavigator = () => {
   return (
-    <NavigationContainer>
-      <Stack.Navigator initialRouteName="LoginOptions">
-        <Stack.Screen 
-          name="LoginOptions" 
-          component={LoginOptionsScreen} 
-          options={{ title: 'OPSI LOGIN' }}
-        />
-        <Stack.Screen 
-          name="Login" 
-          component={LoginScreen} 
-          options={({ route }) => ({
-            title: route.params.userType === 'Pencari' ? 'LOGIN AS PENCARI' : 'LOGIN AS PENYEDIA',
-          })}
-        />
-        <Stack.Screen 
-          name="Register" 
-          component={RegisterScreen} 
-          options={{ title: 'REGISTER AS PENCARI' }}
-        />
-        <Stack.Screen 
-          name="Home" 
-          component={HomeScreen} 
-          options={{ title: 'Home' }}
-        />
-      </Stack.Navigator>
-    </NavigationContainer>
+    <Stack.Navigator initialRouteName="LoginOptions">
+      <Stack.Screen name="LoginOptions" component={LoginOptionsScreen} options={{ headerShown: false }} />
+      <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: true }} />
+      <Stack.Screen name="Register" component={RegisterScreen} options={{ headerShown: true }} />
+      <Stack.Screen name="PencariKost" component={PencariKostScreen} options={{ headerShown: true }} />
+      <Stack.Screen name="PenyediaKost" component={PenyediaKostScreen} options={{ headerShown: true }} />
+    </Stack.Navigator>
   );
 };
 

@@ -1,11 +1,11 @@
-// app/index.jsx
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import LoginOptionsScreen from './screens/LoginOptionsScreen';
 import LoginScreen from './screens/LoginScreen';
 import RegisterScreen from './screens/RegisterScreen';
-import HomeScreen from './screens/HomeScreen';
+import PencariKostScreen from './screens/PencariKostScreen'; // Import baru
+import PenyediaKostScreen from './screens/PenyediaKostScreen'; // Import baru
 
 const Stack = createStackNavigator();
 
@@ -29,9 +29,14 @@ const App = () => {
           options={{ title: 'Register' }}
         />
         <Stack.Screen
-          name="Home"
-          component={HomeScreen}
-          options={{ title: 'Home' }}
+          name="PencariKost"
+          component={PencariKostScreen}
+          options={{ title: 'Pencari Kost' }} // Judul layar
+        />
+        <Stack.Screen
+          name="PenyediaKost"
+          component={PenyediaKostScreen}
+          options={{ title: 'Penyedia Kost' }} // Judul layar
         />
       </Stack.Navigator>
     </NavigationContainer>

@@ -1,42 +1,34 @@
-// app/screens/RegisterScreen.jsx
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
-import { auth } from '../firebase/firebaseConfig';
+import { auth, db } from '../firebase/firebaseConfig'; // Pastikan db diimpor dari firebaseConfig
+import { doc, setDoc } from 'firebase/firestore';
 
-const RegisterScreen = ({ navigation, route }) => {
-  const { userType } = route.params || {};
-  const [name, setName] = useState('');
+const RegisterScreen = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+  const [role, setRole] = useState(''); // Pastikan peran juga diatur
 
   const handleRegister = async () => {
-    if (password !== confirmPassword) {
-      alert('Password dan konfirmasi password tidak cocok!');
-      return;
-    }
     try {
+      // Mendaftar dengan email dan password di Firebase Authentication
       await createUserWithEmailAndPassword(auth, email, password);
-      alert('Registrasi berhasil!');
-      navigation.navigate('Login', { userType }); // pastikan userType dioper saat navigasi
+      
+      // Menyimpan data pengguna ke Firestore
+      const userDoc = doc(db, 'users', email); // Menyimpan berdasarkan email
+      await setDoc(userDoc, { email, role }); // Menyimpan email dan role pengguna
+
+      alert('Registrasi berhasil! Silakan login.');
+      navigation.navigate('LoginOptions');
     } catch (error) {
       alert('Registrasi gagal: ' + error.message);
     }
-  };  
+  };
 
   return (
     <View style={styles.container}>
       <Image source={require('../assets/logo.png')} style={styles.logo} />
       <Text style={styles.title}>Register</Text>
-      <Text style={styles.subtitle}>Silahkan daftar sebagai {userType.toLowerCase()}.</Text>
-      
-      <TextInput
-        style={styles.input}
-        placeholder="Nama Lengkap"
-        value={name}
-        onChangeText={setName}
-      />
       <TextInput
         style={styles.input}
         placeholder="Email"
@@ -53,18 +45,18 @@ const RegisterScreen = ({ navigation, route }) => {
       />
       <TextInput
         style={styles.input}
-        placeholder="Konfirmasi Password"
-        value={confirmPassword}
-        onChangeText={setConfirmPassword}
-        secureTextEntry
+        placeholder="Role (pencari/penyedia)"
+        value={role}
+        onChangeText={setRole}
       />
-
       <TouchableOpacity style={styles.button} onPress={handleRegister}>
-        <Text style={styles.buttonText}>Daftar</Text>
+        <Text style={styles.buttonText}>Register</Text>
       </TouchableOpacity>
-
-      <TouchableOpacity onPress={() => navigation.navigate('Login', { userType })}>
-        <Text style={styles.registerText}>Sudah punya akun? Masuk</Text>
+      <TouchableOpacity
+        style={styles.link}
+        onPress={() => navigation.navigate('LoginOptions')}
+      >
+        <Text style={styles.linkText}>Sudah punya akun? Login di sini</Text>
       </TouchableOpacity>
     </View>
   );
@@ -73,8 +65,8 @@ const RegisterScreen = ({ navigation, route }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
     justifyContent: 'center',
+    alignItems: 'center',
     backgroundColor: '#fff',
   },
   logo: {
@@ -85,36 +77,34 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    marginBottom: 10,
-  },
-  subtitle: {
-    fontSize: 16,
-    color: '#666',
     marginBottom: 20,
   },
   input: {
     width: '80%',
-    padding: 12,
-    marginBottom: 15,
+    padding: 10,
     borderWidth: 1,
     borderColor: '#ccc',
     borderRadius: 5,
+    marginBottom: 10,
   },
   button: {
-    width: '80%',
+    backgroundColor: '#007bff',
     padding: 15,
-    backgroundColor: '#00bcd4',
     borderRadius: 5,
+    marginVertical: 10,
+    width: '80%',
     alignItems: 'center',
   },
   buttonText: {
     color: '#fff',
     fontSize: 16,
-    fontWeight: 'bold',
   },
-  registerText: {
-    marginTop: 10,
-    color: '#666',
+  link: {
+    marginTop: 20,
+  },
+  linkText: {
+    color: '#007bff',
+    fontSize: 14,
   },
 });
 

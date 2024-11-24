@@ -1,19 +1,37 @@
-// app/screens/LoginScreen.jsx
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import { signInWithEmailAndPassword } from 'firebase/auth';
-import { auth } from '../firebase/firebaseConfig';
+import { doc, getDoc } from 'firebase/firestore';
+import { auth, db } from '../firebase/firebaseConfig';
 
 const LoginScreen = ({ navigation, route }) => {
-  const { userType = 'PENCARI LAYANAN' } = route.params || {}; // default jika userType undefined
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
   const handleLogin = async () => {
     try {
+      // Login dengan email dan password
       await signInWithEmailAndPassword(auth, email, password);
-      alert('Login berhasil!');
-      // Navigasi ke halaman utama setelah login
+
+      // Ambil data role pengguna dari Firestore
+      const userDoc = doc(db, 'users', email); // Menggunakan email sebagai ID dokumen
+      const userSnapshot = await getDoc(userDoc);
+
+      if (userSnapshot.exists()) {
+        const userData = userSnapshot.data();
+        const role = userData.role;
+
+        // Navigasi berdasarkan role
+        if (role === 'pencari') {
+          navigation.navigate('PencariKost');
+        } else if (role === 'penyedia') {
+          navigation.navigate('PenyediaKost');
+        } else {
+          alert('Peran tidak dikenali!');
+        }
+      } else {
+        alert('Pengguna tidak ditemukan di database!');
+      }
     } catch (error) {
       alert('Login gagal: ' + error.message);
     }
@@ -23,7 +41,6 @@ const LoginScreen = ({ navigation, route }) => {
     <View style={styles.container}>
       <Image source={require('../assets/logo.png')} style={styles.logo} />
       <Text style={styles.title}>Login</Text>
-      <Text style={styles.subtitle}>Silahkan masuk sebagai {userType ? userType.toLowerCase() : ''}.</Text>
       <TextInput
         style={styles.input}
         placeholder="email"
@@ -41,10 +58,6 @@ const LoginScreen = ({ navigation, route }) => {
       
       <TouchableOpacity style={styles.button} onPress={handleLogin}>
         <Text style={styles.buttonText}>Masuk</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity onPress={() => navigation.navigate('Register', { userType })}>
-        <Text style={styles.registerText}>Belum punya akun? Daftar</Text>
       </TouchableOpacity>
     </View>
   );
@@ -67,11 +80,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 10,
   },
-  subtitle: {
-    fontSize: 16,
-    color: '#666',
-    marginBottom: 20,
-  },
   input: {
     width: '80%',
     padding: 12,
@@ -91,10 +99,6 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
     fontWeight: 'bold',
-  },
-  registerText: {
-    marginTop: 10,
-    color: '#666',
   },
 });
 
