@@ -3,15 +3,17 @@ import { View, Text, TextInput, FlatList, TouchableOpacity, StyleSheet } from 'r
 import { collection, getDocs } from 'firebase/firestore';
 import { db } from '../firebase/firebaseConfig';
 
+// Fungsi untuk memfilter data kost berdasarkan pencarian
 const filterKosts = (kostList, query) => {
   if (!query) return kostList; // Jika query kosong, tampilkan semua data
   return kostList.filter(
     (kost) =>
-      kost.kostName.toLowerCase().includes(query.toLowerCase()) ||
-      kost.location.toLowerCase().includes(query.toLowerCase())
+      kost.kostName?.toLowerCase().includes(query.toLowerCase()) ||
+      kost.location?.toLowerCase().includes(query.toLowerCase())
   );
 };
 
+// Fungsi untuk mengambil data kost dari Firebase Firestore
 const fetchKostData = async () => {
   const kostCollection = collection(db, 'kost');
   const kostSnapshot = await getDocs(kostCollection);
@@ -27,6 +29,7 @@ const PencariKostScreen = ({ navigation }) => {
   const [kostList, setKostList] = useState([]);
   const [filteredKosts, setFilteredKosts] = useState([]);
 
+  // Mengambil data kost saat pertama kali aplikasi dimuat
   useEffect(() => {
     const initializeData = async () => {
       try {
@@ -40,9 +43,9 @@ const PencariKostScreen = ({ navigation }) => {
     initializeData();
   }, []);
 
+  // Memperbarui data kost berdasarkan pencarian
   useEffect(() => {
     const filtered = filterKosts(kostList, searchQuery);
-    console.log('Filtered Kosts:', filtered); // Debugging untuk melihat hasil pencarian
     setFilteredKosts(filtered);
   }, [searchQuery, kostList]);
 
@@ -62,23 +65,29 @@ const PencariKostScreen = ({ navigation }) => {
         onChangeText={setSearchQuery}
       />
 
-      {/* Render filtered kosts */}
-      <FlatList
-        data={filteredKosts}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <View style={styles.kostItem}>
-            <Text style={styles.kostName}>{item.kostName}</Text>
-            <Text style={styles.kostDetails}>Lokasi: {item.location}</Text>
-            <Text style={styles.kostDetails}>
-              Harga: Rp{item.price.toLocaleString()}
-            </Text>
-            <Text style={styles.kostDetails}>
-              Fasilitas: {item.facilities.split(',').join(', ')}
-            </Text>
-          </View>
-        )}
-      />
+      {/* Jika tidak ada kost ditemukan */}
+      {filteredKosts.length === 0 ? (
+        <Text style={styles.noResults}>Tidak ada kost ditemukan.</Text>
+      ) : (
+        <FlatList
+          data={filteredKosts}
+          keyExtractor={(item) => item.id}
+          renderItem={({ item }) => (
+            <View style={styles.kostItem}>
+              <Text style={styles.kostName}>{item.kostName || 'Nama kost tidak tersedia'}</Text>
+              <Text style={styles.kostDetails}>
+                Lokasi: {item.location || 'Lokasi tidak tersedia'}
+              </Text>
+              <Text style={styles.kostDetails}>
+                Harga: Rp{item.price?.toLocaleString() || 'Harga tidak tersedia'}
+              </Text>
+              <Text style={styles.kostDetails}>
+                Fasilitas: {item.facilities || 'Fasilitas tidak tersedia'}
+              </Text>
+            </View>
+          )}
+        />
+      )}
 
       <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
         <Text style={styles.logoutButtonText}>Logout</Text>
@@ -125,6 +134,12 @@ const styles = StyleSheet.create({
   kostDetails: {
     fontSize: 14,
     color: '#555',
+  },
+  noResults: {
+    textAlign: 'center',
+    fontSize: 16,
+    color: '#888',
+    marginTop: 20,
   },
   logoutButton: {
     backgroundColor: '#007bff',
