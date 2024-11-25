@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
-import { auth, db } from '../firebase/firebaseConfig'; // Pastikan db diimpor dari firebaseConfig
+import { auth, db } from '../firebase/firebaseConfig'; 
 import { doc, setDoc } from 'firebase/firestore';
 
 const RegisterScreen = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [role, setRole] = useState(''); // Pastikan peran juga diatur
+  const [role, setRole] = useState(''); 
 
   const handleRegister = async () => {
     try {
