@@ -3,8 +3,6 @@ import { getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
 
-
-// Firebase config object (gantilah dengan informasi yang sesuai)
 const firebaseConfig = {
   apiKey: "AIzaSyC_BdinEmPOgQUfSb9LSVuW3lUXGBGWXY4",
   authDomain: "kostku-1a877.firebaseapp.com",
@@ -15,7 +13,6 @@ const firebaseConfig = {
   measurementId: "G-4QC0VNPSE3"
 };
 
-// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);

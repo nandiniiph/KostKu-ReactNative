@@ -7,21 +7,24 @@ import { auth, db } from '../firebase/firebaseConfig';
 const LoginScreen = ({ navigation, route }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const role = route?.params?.role || '';  
 
   const handleLogin = async () => {
     try {
-      // Login dengan email dan password
-      await signInWithEmailAndPassword(auth, email, password);
-
-      // Ambil data role pengguna dari Firestore
-      const userDoc = doc(db, 'users', email); // Menggunakan email sebagai ID dokumen
+      const { user } = await signInWithEmailAndPassword(auth, email, password);
+  
+      const userDoc = doc(db, 'users', user.email);
       const userSnapshot = await getDoc(userDoc);
-
+  
       if (userSnapshot.exists()) {
         const userData = userSnapshot.data();
-        const role = userData.role;
-
-        // Navigasi berdasarkan role
+        const userRole = userData.role;
+  
+        if (role !== userRole) {
+          alert(`Login gagal! Anda tidak dapat login sebagai ${role} dengan email ini.`);
+          return;
+        }
+  
         if (role === 'pencari') {
           navigation.navigate('PencariKost');
         } else if (role === 'penyedia') {
@@ -36,6 +39,7 @@ const LoginScreen = ({ navigation, route }) => {
       alert('Login gagal: ' + error.message);
     }
   };
+  
 
   return (
     <View style={styles.container}>
@@ -55,7 +59,6 @@ const LoginScreen = ({ navigation, route }) => {
         onChangeText={setPassword}
         secureTextEntry
       />
-      
       <TouchableOpacity style={styles.button} onPress={handleLogin}>
         <Text style={styles.buttonText}>Masuk</Text>
       </TouchableOpacity>

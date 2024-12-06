@@ -4,8 +4,8 @@ import { createStackNavigator } from '@react-navigation/stack';
 import LoginOptionsScreen from './screens/LoginOptionsScreen';
 import LoginScreen from './screens/LoginScreen';
 import RegisterScreen from './screens/RegisterScreen';
-import PencariKostScreen from './screens/PencariKostScreen'; // Import baru
-import PenyediaKostScreen from './screens/PenyediaKostScreen'; // Import baru
+import PencariKostScreen from './screens/PencariKostScreen'; 
+import PenyediaKostScreen from './screens/PenyediaKostScreen'; 
 
 const Stack = createStackNavigator();
 
@@ -31,12 +31,12 @@ const App = () => {
         <Stack.Screen
           name="PencariKost"
           component={PencariKostScreen}
-          options={{ title: 'Pencari Kost' }} // Judul layar
+          options={{ title: 'Pencari Kost' }} 
         />
         <Stack.Screen
           name="PenyediaKost"
           component={PenyediaKostScreen}
-          options={{ title: 'Penyedia Kost' }} // Judul layar
+          options={{ title: 'Penyedia Kost' }}
         />
       </Stack.Navigator>
     </NavigationContainer>

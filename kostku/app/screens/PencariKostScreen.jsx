@@ -29,13 +29,12 @@ const PencariKostScreen = ({ navigation }) => {
   const [kostList, setKostList] = useState([]);
   const [filteredKosts, setFilteredKosts] = useState([]);
 
-  // Mengambil data kost saat pertama kali aplikasi dimuat
   useEffect(() => {
     const initializeData = async () => {
       try {
         const kostData = await fetchKostData();
         setKostList(kostData);
-        setFilteredKosts(kostData); // Menampilkan semua kost pada awalnya
+        setFilteredKosts(kostData); 
       } catch (error) {
         console.error('Error fetching kost data:', error);
       }
@@ -43,7 +42,6 @@ const PencariKostScreen = ({ navigation }) => {
     initializeData();
   }, []);
 
-  // Memperbarui data kost berdasarkan pencarian
   useEffect(() => {
     const filtered = filterKosts(kostList, searchQuery);
     setFilteredKosts(filtered);

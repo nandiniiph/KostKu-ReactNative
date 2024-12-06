@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
-import { db } from '../firebase/firebaseConfig'; // Pastikan db diimpor dengan benar
+import { db, auth } from '../firebase/firebaseConfig'; // Pastikan db dan auth diimpor dengan benar
 import { collection, addDoc } from 'firebase/firestore'; 
 
 const PenyediaKostScreen = ({ navigation }) => {
@@ -11,23 +11,32 @@ const PenyediaKostScreen = ({ navigation }) => {
 
   // Fungsi untuk menambahkan kost ke Firestore
   const addKost = async () => {
-    // Cek apakah semua field diisi
+    console.log("Tombol 'Tambah Kost' diklik");
     if (!kostName || !location || !price || !facilities) {
       Alert.alert('Error', 'Semua field harus diisi!');
       return;
     }
+
+    // Pastikan pengguna sudah login
+    if (!auth.currentUser) {
+      Alert.alert('Error', 'Anda harus login terlebih dahulu!');
+      return;
+    }
+
+    console.log(auth.currentUser);
 
     try {
       // Menambahkan data kost ke Firestore
       const docRef = await addDoc(collection(db, 'kost'), {
         kostName,
         location,
-        price: parseInt(price), // Pastikan harga dalam bentuk angka
+        price: parseInt(price),
         facilities,
+        createdBy: auth.currentUser.uid, 
       });
 
       // Menampilkan pesan sukses
-      console.log("Kost berhasil ditambahkan dengan ID: ", docRef.id); // Log ID dokumen baru yang ditambahkan
+      console.log("Kost berhasil ditambahkan dengan ID: ", docRef.id); 
       Alert.alert('Success', 'Kost berhasil ditambahkan!');
 
       // Reset form input setelah penambahan
@@ -37,9 +46,8 @@ const PenyediaKostScreen = ({ navigation }) => {
       setFacilities('');
 
     } catch (error) {
-      // Menampilkan pesan error jika gagal menambahkan
       console.error("Error menambahkan kost:", error);  // Log error
-      Alert.alert('Error', 'Gagal menambahkan kost! Pastikan koneksi internet Anda stabil.');
+      Alert.alert('Error', 'Gagal menambahkan kost! ');
     }
   };
 

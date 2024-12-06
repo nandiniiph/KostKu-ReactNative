@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
-import { auth, db } from '../firebase/firebaseConfig'; 
+import { auth, db } from '../firebase/firebaseConfig';
 import { doc, setDoc } from 'firebase/firestore';
 
 const RegisterScreen = ({ navigation }) => {
@@ -11,12 +11,11 @@ const RegisterScreen = ({ navigation }) => {
 
   const handleRegister = async () => {
     try {
-      // Mendaftar dengan email dan password di Firebase Authentication
       await createUserWithEmailAndPassword(auth, email, password);
       
       // Menyimpan data pengguna ke Firestore
-      const userDoc = doc(db, 'users', email); // Menyimpan berdasarkan email
-      await setDoc(userDoc, { email, role }); // Menyimpan email dan role pengguna
+      const userDoc = doc(db, 'users', email);
+      await setDoc(userDoc, { email, role }); 
 
       alert('Registrasi berhasil! Silakan login.');
       navigation.navigate('LoginOptions');
