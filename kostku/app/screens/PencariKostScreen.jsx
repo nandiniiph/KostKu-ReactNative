@@ -5,7 +5,7 @@ import { db } from '../firebase/firebaseConfig';
 
 // Fungsi untuk memfilter data kost berdasarkan pencarian
 const filterKosts = (kostList, query) => {
-  if (!query) return kostList; // Jika query kosong, tampilkan semua data
+  if (!query) return kostList;
   return kostList.filter(
     (kost) =>
       kost.kostName?.toLowerCase().includes(query.toLowerCase()) ||
@@ -13,7 +13,6 @@ const filterKosts = (kostList, query) => {
   );
 };
 
-// Fungsi untuk mengambil data kost dari Firebase Firestore
 const fetchKostData = async () => {
   const kostCollection = collection(db, 'kost');
   const kostSnapshot = await getDocs(kostCollection);
@@ -34,7 +33,7 @@ const PencariKostScreen = ({ navigation }) => {
       try {
         const kostData = await fetchKostData();
         setKostList(kostData);
-        setFilteredKosts(kostData); 
+        setFilteredKosts(kostData);
       } catch (error) {
         console.error('Error fetching kost data:', error);
       }
@@ -51,6 +50,10 @@ const PencariKostScreen = ({ navigation }) => {
     navigation.navigate('LoginOptions');
   };
 
+  const handleKostPress = (kostId) => {
+    navigation.navigate('DetailKost', { kostId });
+  };
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Selamat Datang, Pencari Kost!</Text>
@@ -63,7 +66,6 @@ const PencariKostScreen = ({ navigation }) => {
         onChangeText={setSearchQuery}
       />
 
-      {/* Jika tidak ada kost ditemukan */}
       {filteredKosts.length === 0 ? (
         <Text style={styles.noResults}>Tidak ada kost ditemukan.</Text>
       ) : (
@@ -71,18 +73,14 @@ const PencariKostScreen = ({ navigation }) => {
           data={filteredKosts}
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
-            <View style={styles.kostItem}>
-              <Text style={styles.kostName}>{item.kostName || 'Nama kost tidak tersedia'}</Text>
-              <Text style={styles.kostDetails}>
-                Lokasi: {item.location || 'Lokasi tidak tersedia'}
-              </Text>
-              <Text style={styles.kostDetails}>
-                Harga: Rp{item.price?.toLocaleString() || 'Harga tidak tersedia'}
-              </Text>
-              <Text style={styles.kostDetails}>
-                Fasilitas: {item.facilities || 'Fasilitas tidak tersedia'}
-              </Text>
-            </View>
+            <TouchableOpacity onPress={() => handleKostPress(item.id)}>
+              <View style={styles.kostItem}>
+                <Text style={styles.kostName}>{item.kostName || 'Nama kost tidak tersedia'}</Text>
+                <Text style={styles.kostDetails}>Lokasi: {item.location || 'Lokasi tidak tersedia'}</Text>
+                <Text style={styles.kostDetails}>Harga: Rp{item.price?.toLocaleString() || 'Harga tidak tersedia'}</Text>
+                <Text style={styles.kostDetails}>Fasilitas: {item.facilities || 'Fasilitas tidak tersedia'}</Text>
+              </View>
+            </TouchableOpacity>
           )}
         />
       )}

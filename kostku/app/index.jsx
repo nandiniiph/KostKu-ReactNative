@@ -6,6 +6,7 @@ import LoginScreen from './screens/LoginScreen';
 import RegisterScreen from './screens/RegisterScreen';
 import PencariKostScreen from './screens/PencariKostScreen'; 
 import PenyediaKostScreen from './screens/PenyediaKostScreen'; 
+import DetailKostScreen from './screens/DetailKostScreen';
 
 const Stack = createStackNavigator();
 
@@ -37,6 +38,11 @@ const App = () => {
           name="PenyediaKost"
           component={PenyediaKostScreen}
           options={{ title: 'Penyedia Kost' }}
+        />
+        <Stack.Screen
+          name="DetailKost"
+          component={DetailKostScreen}
+          options={{ title: 'Detail Kost' }}
         />
       </Stack.Navigator>
     </NavigationContainer>
