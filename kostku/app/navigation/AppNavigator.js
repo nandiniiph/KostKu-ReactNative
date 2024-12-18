@@ -1,11 +1,11 @@
-import React from 'react';
-import { createStackNavigator } from '@react-navigation/stack';
-import LoginOptionsScreen from '../screens/LoginOptionsScreen';
-import LoginScreen from '../screens/LoginScreen';
-import RegisterScreen from '../screens/RegisterScreen';
-import PencariKostScreen from '../screens/PencariKostScreen';
-import PenyediaKostScreen from '../screens/PenyediaKostScreen';
-import RiwayatPemesananScreen from '../screens/RiwayatPemesananScreen'; // Import screen baru
+import React from "react";
+import { createStackNavigator } from "@react-navigation/stack";
+import LoginOptionsScreen from "../screens/LoginOptionsScreen";
+import LoginScreen from "../screens/LoginScreen";
+import RegisterScreen from "../screens/RegisterScreen";
+import PencariKostScreen from "../screens/PencariKostScreen";
+import PenyediaKostScreen from "../screens/PenyediaKostScreen";
+import RiwayatPemesananScreen from "../screens/RiwayatPemesananScreen";
 
 const Stack = createStackNavigator();
 
@@ -17,7 +17,7 @@ const AppNavigator = () => {
       <Stack.Screen name="Register" component={RegisterScreen} options={{ headerShown: true }} />
       <Stack.Screen name="PencariKost" component={PencariKostScreen} options={{ headerShown: true }} />
       <Stack.Screen name="PenyediaKost" component={PenyediaKostScreen} options={{ headerShown: true }} />
-      <Stack.Screen name="RiwayatPemesananScreen" component={RiwayatPemesananScreen} options={{ title: 'Riwayat Pemesanan' }} />
+      <Stack.Screen name="RiwayatPemesananScreen" component={RiwayatPemesananScreen} options={{ headerShown: true }} />
     </Stack.Navigator>
   );
 };

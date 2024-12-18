@@ -17,7 +17,9 @@ const fetchKostData = async () => {
   return kostSnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
 };
 
-const PencariKostScreen = ({ navigation }) => {
+const PencariKostScreen = ({ navigation, route }) => {
+  const email = route?.params?.email || "";
+  console.log("ini email dari pencari", email);
   const [searchQuery, setSearchQuery] = useState('');
   const [kostList, setKostList] = useState([]);
   const [filteredKosts, setFilteredKosts] = useState([]);
@@ -43,10 +45,10 @@ const PencariKostScreen = ({ navigation }) => {
 
   const handleLogout = () => navigation.navigate('LoginOptions');
 
-  const handleKostPress = (kostId) => navigation.navigate('DetailKost', { kostId });
+  const handleKostPress = (kostId, kostName) => navigation.navigate('DetailKost', { kostId, kostName, email });
 
   const renderKostItem = ({ item: { id, kostName, location, price, facilities } }) => (
-    <TouchableOpacity onPress={() => handleKostPress(id)}>
+    <TouchableOpacity onPress={() => handleKostPress(id, kostName)}>
       <View style={styles.kostItem}>
         <Text style={styles.kostName}>{kostName || 'Nama kost tidak tersedia'}</Text>
         <Text style={styles.kostDetails}>Lokasi: {location || 'Lokasi tidak tersedia'}</Text>

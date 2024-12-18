@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { doc, getDoc } from 'firebase/firestore';
+import { doc, getDoc, collection, addDoc } from 'firebase/firestore';
 import { db } from '../firebase/firebaseConfig';
 
 const DetailKostScreen = ({ route, navigation }) => {
   const [kost, setKost] = useState(null);
-  const { kostId } = route.params;
+  const { kostId, kostName, email } = route.params;
+  console.log(kostName)
+  console.log("ini email dari detail", email)
 
   useEffect(() => {
     const fetchKostDetail = async () => {
@@ -21,9 +23,32 @@ const DetailKostScreen = ({ route, navigation }) => {
     fetchKostDetail();
   }, [kostId]);
 
-  const handleBooking = () => {
-    alert('Silakan melakukan pembayaran dengan menghubungi contact person berikut: ' + kost.contactPerson);
-    // Navigasi atau logika tambahan jika diperlukan
+  const handleBooking = async () => {
+    try {
+      if (!kost) {
+        alert("Detail kost tidak ditemukan!");
+        return;
+      }
+
+      // Data yang akan ditambahkan ke koleksi `detail_booking`
+      const bookingData = {
+        email_user: email,
+        id_kost: kostId,
+        nama_kost: kostName,
+        owner_kost: kost.ownerEmail, // Diasumsikan ada field `ownerEmail` di koleksi `kost`
+        timestamp: new Date() // Menambahkan waktu booking
+      };
+
+      // Menambahkan data ke koleksi `detail_booking`
+      const bookingRef = collection(db, 'detail_booking');
+      await addDoc(bookingRef, bookingData);
+
+      alert("Booking berhasil! Silakan hubungi contact person berikut: " + kost.contactPerson);
+      navigation.goBack(); // Navigasi kembali atau ke halaman lain jika diperlukan
+    } catch (error) {
+      console.error("Gagal melakukan booking:", error);
+      alert("Terjadi kesalahan saat melakukan booking. Silakan coba lagi.");
+    }
   };
 
   if (!kost) {
