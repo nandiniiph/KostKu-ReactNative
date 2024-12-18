@@ -1,53 +1,90 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
-import { db, auth } from '../firebase/firebaseConfig'; // Pastikan db dan auth diimpor dengan benar
-import { collection, addDoc } from 'firebase/firestore'; 
+import React, { useState, useEffect } from 'react';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, FlatList } from 'react-native';
+import { db, auth } from '../firebase/firebaseConfig';
+import { collection, addDoc, deleteDoc, doc, onSnapshot, query, where } from 'firebase/firestore';
+
+// Fungsi tingkat tinggi untuk validasi
+const withValidation = (callback, validations) => {
+  return (...args) => {
+    for (const validate of validations) {
+      const error = validate(...args);
+      if (error) {
+        Alert.alert('Error', error);
+        return;
+      }
+    }
+    return callback(...args);
+  };
+};
 
 const PenyediaKostScreen = ({ navigation }) => {
   const [kostName, setKostName] = useState('');
   const [location, setLocation] = useState('');
   const [price, setPrice] = useState('');
   const [facilities, setFacilities] = useState('');
+  const [kostList, setKostList] = useState([]);
 
-  // Fungsi untuk menambahkan kost ke Firestore
-  const addKost = async () => {
-    console.log("Tombol 'Tambah Kost' diklik");
-    if (!kostName || !location || !price || !facilities) {
-      Alert.alert('Error', 'Semua field harus diisi!');
-      return;
-    }
-
-    // Pastikan pengguna sudah login
+  useEffect(() => {
     if (!auth.currentUser) {
       Alert.alert('Error', 'Anda harus login terlebih dahulu!');
       return;
     }
 
-    console.log(auth.currentUser);
+    const q = query(
+      collection(db, 'kost'),
+      where('ownerEmail', '==', auth.currentUser.email)
+    );
 
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const data = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      setKostList(data);
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  // Validasi input
+  const validateInput = () => {
+    if (!kostName || !location || !price || !facilities) {
+      return 'Harap isi semua field!';
+    }
+    if (isNaN(price)) {
+      return 'Harga harus berupa angka!';
+    }
+    return null;
+  };
+
+  // Fungsi untuk menambah kost dengan validasi
+  const handleAddKost = withValidation(async () => {
     try {
-      // Menambahkan data kost ke Firestore
-      const docRef = await addDoc(collection(db, 'kost'), {
+      await addDoc(collection(db, 'kost'), {
         kostName,
         location,
         price: parseInt(price),
         facilities,
-        createdBy: auth.currentUser.uid, 
+        ownerEmail: auth.currentUser.email,
       });
-
-      // Menampilkan pesan sukses
-      console.log("Kost berhasil ditambahkan dengan ID: ", docRef.id); 
       Alert.alert('Success', 'Kost berhasil ditambahkan!');
-
-      // Reset form input setelah penambahan
       setKostName('');
       setLocation('');
       setPrice('');
       setFacilities('');
-
     } catch (error) {
-      console.error("Error menambahkan kost:", error);  // Log error
-      Alert.alert('Error', 'Gagal menambahkan kost! ');
+      console.error('Error menambahkan kost:', error);
+      Alert.alert('Error', 'Gagal menambahkan kost!');
+    }
+  }, [validateInput]);
+
+  const deleteKost = async (kostId) => {
+    try {
+      await deleteDoc(doc(db, 'kost', kostId));
+      Alert.alert('Success', 'Kost berhasil dihapus!');
+    } catch (error) {
+      console.error('Error menghapus kost:', error);
+      Alert.alert('Error', 'Gagal menghapus kost!');
     }
   };
 
@@ -55,7 +92,7 @@ const PenyediaKostScreen = ({ navigation }) => {
     <View style={styles.container}>
       <Text style={styles.title}>Halaman Penyedia Kost</Text>
 
-      {/* Form untuk menambahkan kost */}
+      {/* Input Form */}
       <TextInput
         style={styles.input}
         placeholder="Nama Kost"
@@ -82,12 +119,41 @@ const PenyediaKostScreen = ({ navigation }) => {
         onChangeText={setFacilities}
       />
 
-      {/* Tombol untuk menambahkan kost */}
-      <TouchableOpacity style={styles.button} onPress={addKost}>
+      {/* Tombol Tambah Kost */}
+      <TouchableOpacity style={styles.button} onPress={handleAddKost}>
         <Text style={styles.buttonText}>Tambah Kost</Text>
       </TouchableOpacity>
 
-      {/* Tombol kembali ke halaman sebelumnya */}
+      {/* Daftar Kost */}
+      <Text style={styles.subtitle}>Daftar Kost Anda</Text>
+      <FlatList
+        data={kostList}
+        keyExtractor={(item) => item.id}
+        renderItem={({ item }) => (
+          <View style={styles.kostItem}>
+            <Text style={styles.kostName}>{item.kostName}</Text>
+            <Text>Lokasi: {item.location}</Text>
+            <Text>Harga: {item.price}</Text>
+            <Text>Fasilitas: {item.facilities}</Text>
+            <TouchableOpacity
+              style={styles.deleteButton}
+              onPress={() => deleteKost(item.id)}
+            >
+              <Text style={styles.deleteButtonText}>Hapus</Text>
+            </TouchableOpacity>
+          </View>
+        )}
+      />
+
+      {/* Tombol Lihat Riwayat Pemesanan */}
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() => navigation.navigate('RiwayatPemesananScreen')}
+      >
+        <Text style={styles.buttonText}>Lihat Riwayat Pemesanan</Text>
+      </TouchableOpacity>
+
+      {/* Tombol Kembali */}
       <TouchableOpacity
         style={styles.button}
         onPress={() => navigation.goBack()}
@@ -109,6 +175,12 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     textAlign: 'center',
   },
+  subtitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginTop: 20,
+    marginBottom: 10,
+  },
   input: {
     height: 40,
     borderColor: '#ccc',
@@ -127,6 +199,27 @@ const styles = StyleSheet.create({
   buttonText: {
     color: '#fff',
     fontSize: 16,
+  },
+  kostItem: {
+    padding: 15,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 5,
+    marginBottom: 10,
+  },
+  kostName: {
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  deleteButton: {
+    backgroundColor: '#ff4444',
+    padding: 5,
+    borderRadius: 5,
+    marginTop: 10,
+  },
+  deleteButtonText: {
+    color: '#fff',
+    textAlign: 'center',
   },
 });
 

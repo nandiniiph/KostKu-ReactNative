@@ -3,24 +3,18 @@ import { View, Text, TextInput, FlatList, TouchableOpacity, StyleSheet } from 'r
 import { collection, getDocs } from 'firebase/firestore';
 import { db } from '../firebase/firebaseConfig';
 
-// Fungsi untuk memfilter data kost berdasarkan pencarian
-const filterKosts = (kostList, query) => {
-  if (!query) return kostList;
-  return kostList.filter(
-    (kost) =>
-      kost.kostName?.toLowerCase().includes(query.toLowerCase()) ||
-      kost.location?.toLowerCase().includes(query.toLowerCase())
-  );
-};
+// Utility function to filter kost data based on search query
+const filterKosts = (kostList, query) => 
+  !query
+    ? kostList
+    : kostList.filter(({ kostName = '', location = '' }) => 
+        [kostName.toLowerCase(), location.toLowerCase()].some((field) => field.includes(query.toLowerCase()))
+      );
 
+// Fetch kost data from Firestore
 const fetchKostData = async () => {
-  const kostCollection = collection(db, 'kost');
-  const kostSnapshot = await getDocs(kostCollection);
-  const kostData = kostSnapshot.docs.map((doc) => ({
-    id: doc.id,
-    ...doc.data(),
-  }));
-  return kostData;
+  const kostSnapshot = await getDocs(collection(db, 'kost'));
+  return kostSnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
 };
 
 const PencariKostScreen = ({ navigation }) => {
@@ -28,6 +22,7 @@ const PencariKostScreen = ({ navigation }) => {
   const [kostList, setKostList] = useState([]);
   const [filteredKosts, setFilteredKosts] = useState([]);
 
+  // Initialize kost data
   useEffect(() => {
     const initializeData = async () => {
       try {
@@ -41,18 +36,25 @@ const PencariKostScreen = ({ navigation }) => {
     initializeData();
   }, []);
 
+  // Update filtered kosts when search query changes
   useEffect(() => {
-    const filtered = filterKosts(kostList, searchQuery);
-    setFilteredKosts(filtered);
+    setFilteredKosts(filterKosts(kostList, searchQuery));
   }, [searchQuery, kostList]);
 
-  const handleLogout = () => {
-    navigation.navigate('LoginOptions');
-  };
+  const handleLogout = () => navigation.navigate('LoginOptions');
 
-  const handleKostPress = (kostId) => {
-    navigation.navigate('DetailKost', { kostId });
-  };
+  const handleKostPress = (kostId) => navigation.navigate('DetailKost', { kostId });
+
+  const renderKostItem = ({ item: { id, kostName, location, price, facilities } }) => (
+    <TouchableOpacity onPress={() => handleKostPress(id)}>
+      <View style={styles.kostItem}>
+        <Text style={styles.kostName}>{kostName || 'Nama kost tidak tersedia'}</Text>
+        <Text style={styles.kostDetails}>Lokasi: {location || 'Lokasi tidak tersedia'}</Text>
+        <Text style={styles.kostDetails}>Harga: Rp{price?.toLocaleString() || 'Harga tidak tersedia'}</Text>
+        <Text style={styles.kostDetails}>Fasilitas: {facilities || 'Fasilitas tidak tersedia'}</Text>
+      </View>
+    </TouchableOpacity>
+  );
 
   return (
     <View style={styles.container}>
@@ -72,16 +74,7 @@ const PencariKostScreen = ({ navigation }) => {
         <FlatList
           data={filteredKosts}
           keyExtractor={(item) => item.id}
-          renderItem={({ item }) => (
-            <TouchableOpacity onPress={() => handleKostPress(item.id)}>
-              <View style={styles.kostItem}>
-                <Text style={styles.kostName}>{item.kostName || 'Nama kost tidak tersedia'}</Text>
-                <Text style={styles.kostDetails}>Lokasi: {item.location || 'Lokasi tidak tersedia'}</Text>
-                <Text style={styles.kostDetails}>Harga: Rp{item.price?.toLocaleString() || 'Harga tidak tersedia'}</Text>
-                <Text style={styles.kostDetails}>Fasilitas: {item.facilities || 'Fasilitas tidak tersedia'}</Text>
-              </View>
-            </TouchableOpacity>
-          )}
+          renderItem={renderKostItem}
         />
       )}
 
