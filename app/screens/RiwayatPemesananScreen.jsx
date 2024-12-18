@@ -3,7 +3,7 @@ import { View, Text, TouchableOpacity, StyleSheet, Alert, FlatList } from 'react
 import { db, auth } from '../firebase/firebaseConfig';
 import { collection, onSnapshot, query, where } from 'firebase/firestore';
 
-// Utility functions to promote functional programming
+
 const fetchKostData = (snapshot) => {
   return snapshot.docs.map((doc) => ({
     id: doc.id,

@@ -57,7 +57,7 @@ const PenyediaKostScreen = ({ navigation }) => {
     return null;
   };
 
-  // Fungsi untuk menambah kost dengan validasi
+  // Fungsi untuk menambah kost 
   const handleAddKost = withValidation(async () => {
     try {
       await addDoc(collection(db, 'kost'), {
